@@ -1,0 +1,41 @@
+# -*- mode: Makefile -*-
+# Makefile for Excat license(solaris amd 64 bit )
+# $Id$
+
+DESTDIR = 
+
+srcdir = .
+objdir = ./obj
+prefix = /usr/
+libdir = /usr/lib/amd64/
+
+CXX = cc 
+LINK = CC 
+CXXFLAGS = -xarch=amd64 -Kpic -c -g 
+LIBS_D = -lssl -lcrypto 
+LICENSE_SO = liblicense.so.3.0.0
+OBJ = $(objdir)/certificate.o $(objdir)/license.o $(objdir)/version.o $(objdir)/der2hex.o
+
+all: ${LICENSE_SO}
+	@echo
+	@echo "Build complete."
+
+install: all
+	rm -f $(libdir)liblicense.*
+	cp ${LICENSE_SO} $(DESTDIR)$(libdir)
+	ln -s $(libdir)${LICENSE_SO} $(DESTDIR)$(libdir)liblicense.so.3
+	ln -s $(libdir)liblicense.so.3 $(DESTDIR)$(libdir)liblicense.so
+
+
+${LICENSE_SO}: ${OBJ} 
+	${LINK} -xarch=amd64 -G -o $@ ${objdir}/*.o -h $@ ${LIBS_D}
+
+${objdir}/%.o: ${srcdir}/%.c 
+	${CXX} ${CXXFLAGS} ${INCLUDEFLAGS} -o $@ $< 
+
+
+clean:
+	rm -f ./obj/*.*
+	rm -f ${LICENSE_SO}
+
+# the end of file

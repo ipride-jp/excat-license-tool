@@ -1,0 +1,67 @@
+CC = @CC@
+CXX = @CXX@
+CP = cp
+CFLAGS = -Wall -ansi -pedantic -g
+COMPILE = libtool --mode=compile $(CC) $(CFLAGS) -c
+COMPILEXX = libtool --mode=compile $(CXX) $(CFLAGS) -c
+LINK = libtool --mode=link $(CC)
+LINKXX = libtool --mode=link $(CXX)
+
+all: test
+
+test: test-c++ test-cert test-main test-ver certs
+	./test-cert
+	./test-java.sh
+	./test-main.sh
+	./test-ver
+
+test-c++: test-c++.o ../liblicense.la
+	$(LINKXX) -o $@ $< ../liblicense.la
+
+test-cert: test-cert.o ../liblicense.la
+	$(LINK) -o $@ $< ../liblicense.la
+
+test-main: test-main.o ../liblicense.la
+	$(LINK) -o $@ $< ../liblicense.la
+
+test-ver: test-ver.o ../liblicense.la
+	$(LINK) -o $@ $< ../liblicense.la
+
+test-c++.o: test-c++.C
+	$(COMPILEXX) -I.. $<
+
+test-cert.o: test-cert.c
+	$(COMPILE) -I.. $<
+
+test-main.o: test-main.c
+	$(COMPILE) -I.. $<
+
+test-ver.o: test-ver.c
+	$(COMPILE) -I.. $<
+
+
+certs: c-2cert.pem c-3cert.pem c-4cert.pem
+
+c-2cert.pem:
+	make -C ../ Makefile client-certs
+
+c-3cert.pem:
+	make -C ../ Makefile client-certs
+
+c-4cert.pem:
+	make -C ../ Makefile client-certs
+
+clean:
+	$(RM) -fr .libs
+	$(RM) -f *~
+	$(RM) -f *.o *.lo
+	$(RM) -f test-c++
+	$(RM) -f test-cert
+	$(RM) -f test-main
+	$(RM) -f test-ver
+
+distclean: clean
+	$(RM) -f *.pem
+	$(RM) -f Makefile
+
+# the end of file

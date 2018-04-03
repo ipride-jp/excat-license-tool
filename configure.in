@@ -1,0 +1,13 @@
+dnl configure.in for iPride's licensing library
+AC_INIT([license],0.0.4 , abe@ipride.co.jp)
+LT_VERSION=2:1:1
+AC_SUBST(LT_VERSION)
+AC_PROG_LIBTOOL
+AM_INIT_AUTOMAKE(license,0.0.4)
+AC_PROG_INSTALL
+AC_PROG_CC
+AC_PROG_CXX
+
+AC_CHECK_FUNCS(strdup)
+AC_OUTPUT(Makefile)
+dnl the end of file

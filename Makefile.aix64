@@ -1,0 +1,40 @@
+# -*- mode: Makefile -*-
+# Makefile for Excat license(aix 64 bit )
+# $Id$
+
+DESTDIR = 
+
+srcdir = .
+objdir = ./obj
+prefix = /usr/
+libdir = $(prefix)lib/
+
+CXX = xlC_r
+LINK = xlC_r
+CXXFLAGS = -q64 -DPIC -c -g 
+LIBS_D = -lssl -lcrypto -lc
+LICENSE_SO = liblicense.a.1
+OBJ = $(objdir)/certificate.o $(objdir)/license.o $(objdir)/version.o $(objdir)/der2hex.o
+
+all: ${LICENSE_SO}
+	@echo
+	@echo "Build complete."
+
+install: all
+	mkdir -p $(DESTDIR)$(libdir)
+	rm -f $(libdir)liblicense.*
+	cp ${LICENSE_SO} $(DESTDIR)$(libdir)
+	ln -s $(libdir)liblicense.a.1 $(DESTDIR)$(libdir)liblicense.a
+
+${LICENSE_SO}: ${OBJ} 
+	${LINK} -q64 -G -o $@ ${objdir}/*.o ${LIBS_D}
+
+${objdir}/%.o: ${srcdir}/%.c 
+	${CXX} ${CXXFLAGS} ${INCLUDEFLAGS} -o $@ $< 
+
+
+clean:
+	rm -f ./obj/*.*
+	rm -f ${LICENSE_SO}
+
+# the end of file

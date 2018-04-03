@@ -1,0 +1,57 @@
+%define prefix /usr
+%define version @PACKAGE_VERSION@
+
+Summary: iPride's licensing library
+Name: license
+Version: %{version}
+Release: 1
+License: Commercial
+Group: Development/Tools
+URL: http://www.ipride.co.jp/
+Source0: %{name}-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+Packager: Hiroshi ABE <abe@ipride.co.jp>
+
+%description
+This package provides licensing facilities for iPride's products.
+
+%package CA
+Group: Development/Tools
+Summary: iPride's licensing CA
+
+%description CA
+This package provides root CA for licensing iPride's products.
+*THIS PACKAGE IS ONLY FOR IPRIDE'S INTERNAL USE*
+
+%prep
+%setup -q
+
+%build
+autoconf
+./configure --prefix=%{prefix}
+make
+make test
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make DESTDIR=${RPM_BUILD_ROOT}/ install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root,-)
+%{prefix}/include/*
+%{prefix}/lib/*
+
+%files CA
+%defattr(-,root,root,-)
+%{prefix}/share/license/*
+
+%changelog
+* Web Dec 20 2006 Hiroshi ABE <abe@ipride.co.jp> -
+- Added API to extract miscellaneous information from license file.
+
+* Sun Nov 19 2006 Hiroshi ABE <abe@ipride.co.jp> - 
+- Initial build.
+

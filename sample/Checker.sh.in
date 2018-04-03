@@ -1,0 +1,6 @@
+#!/bin/sh
+set prefix=@prefix@
+set exec_prefix=@exec_prefix@
+set libdir=@libdir@
+java -Djava.library.path=${libdir} -classpath .:${libdir}/License.jar Checker $*
+# the end of file

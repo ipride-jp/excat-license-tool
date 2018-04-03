@@ -1,0 +1,29 @@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+incdir = @includedir@
+libdir = @libdir@
+srcdir = @srcdir@
+
+CC = @CC@
+CFLAGS = -Wall -ansi -pedantic -g
+JAVAC = javac
+
+all: checker-d checker-r Checker.class
+
+# dynamic linked
+checker-d: checker.o
+	$(CC) -o $@ -L$(libdir) $< -dynamic -llicense
+
+# dynamic linked, with embedding the place of liblicense.so
+checker-r: checker.o
+	$(CC) -o $@ -L$(libdir) $< -dynamic -llicense -Wl,--rpath -Wl,$(libdir)
+
+checker.o: checker.c
+	$(CC) -c $(CFLAGS) -I$(incdir) $<
+
+Checker.class: Checker.java
+	$(JAVAC) -classpath $(libdir)/License.jar $<
+	chmod +x Checker.sh
+
+# the end of file

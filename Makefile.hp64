@@ -1,0 +1,39 @@
+# -*- mode: Makefile -*-
+# Makefile for Excat license(aix 64 bit )
+# $Id$
+
+DESTDIR = 
+
+srcdir = .
+objdir = ./obj
+prefix = /usr/
+libdir = $(prefix)lib/pa20_64/
+
+CXX=aCC
+LINK=aCC
+CXXFLAGS = +DD64 +z +u4 -c -D_HPUX -D_POSIX_C_SOURCE=199506L -D_XOPEN_SOURCE_EXTENDED 
+LIBS_D = -lssl -lcrypto -lCsup -lstream -lstd
+LICENSE_SO = liblicense.sl
+OBJ = $(objdir)/certificate.o $(objdir)/license.o $(objdir)/version.o $(objdir)/der2hex.o
+
+all: ${LICENSE_SO}
+	@echo
+	@echo "Build complete."
+
+install: all
+	mkdir -p $(DESTDIR)$(libdir)
+	rm -f $(libdir)liblicense.*
+	cp ${LICENSE_SO} $(DESTDIR)$(libdir)
+
+${LICENSE_SO}: ${OBJ} 
+	${LINK} +DD64 -b  -o $@ ${objdir}/*.o ${LIBS_D}
+
+${objdir}/%.o: ${srcdir}/%.c 
+	${CXX} ${CXXFLAGS} -o $@ $< 
+
+
+clean:
+	rm -f ./obj/*.*
+	rm -f ${LICENSE_SO}
+
+# the end of file

@@ -1,0 +1,60 @@
+DESTDIR =
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+libdir = @libdir@
+srcdir = @srcdir@
+
+CC = @CC@
+CFLAGS = -Wall -ansi -pedantic -g
+COMPILE = libtool --mode=compile $(CC) $(CFLAGS) -c
+INSTALL = libtool --mode=install install -c
+JAR = jar
+JAVA = java
+JAVAC = javac
+JAVAH = javah
+MKDIR = mkdir
+LINK = libtool --mode=link $(CC) -rpath $(libdir)
+LN = ln
+
+all: License.jar libLicense.so
+
+install: libLicense.la License.jar
+	$(INSTALL) libLicense.la $(DESTDIR)$(libdir)/libLicense.la
+	$(INSTALL) License.jar $(DESTDIR)$(libdir)/License.jar
+
+License.jar: License.class MANIFEST.MF
+	$(JAR) -cvfm $@ MANIFEST.MF jp/
+
+libLicense.so: libLicense.la
+	$(LN) -s .libs/libLicense.so
+
+libLicense.la: jp_co_ipride_License.lo ../liblicense.la
+	$(LINK) -release 0.0.1 --mode=link -o $@ $< ../liblicense.la
+
+jp_co_ipride_License.lo: jp_co_ipride_License.c jp_co_ipride_License.h
+	$(COMPILE) -I.. $<
+
+jp_co_ipride_License.h: License.class
+	$(JAVAH) -jni jp.co.ipride.License
+
+License.class: License.java
+	$(JAVAC) License.java
+	$(RM) -fr jp
+	$(MKDIR) -p jp/co/ipride/
+	$(LN) -s `pwd`/License.class jp/co/ipride/License.class
+
+clean:
+	$(RM) -fr jp
+	$(RM) -fr .libs
+	$(RM) -f License.class
+	$(RM) -f jp_co_ipride_License.h
+	$(RM) -f *.jar
+	$(RM) -f *.o *.lo *.so *.la
+	$(RM) -f *~
+
+distclean: clean
+	$(RM) -f Makefile
+
+# the end of file
